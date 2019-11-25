@@ -6,6 +6,7 @@ class FortniteAPI
     STWNews = Struct.new(:image, :hidden, :messageType, :type, :adspace, :spotlight, :title, :body)
     CreativeNews = Struct.new(:image, :hidden, :messageType, :type, :adspace, :spotlight, :title, :body)
     ShopItem = Struct.new(:regularPrice, :finalPrice, :isBundle, :giftable, :refundable, :panel, :sortPriority, :banner, :items)
+    CreatorCode = Struct.new(:id, :slug, :displayName, :status, :verified)
 
     def search_cosmetic(searchQuery, tag='name', language='en', searchLanguage='en')
         response = HTTParty.get("https://fortnite-api.com/cosmetics/br/search?#{tag}=#{searchQuery}&language=#{language}&searchLanguage=#{searchLanguage}")
@@ -27,6 +28,11 @@ class FortniteAPI
             searchResult
         end
     end
+
+    def get_creator_code(slug)
+        repsonse = HTTParty.get("https://fortnite-api.com/creatorcode/search?slug=#{slug}")
+        body = JSON.parse(response.body)['data']
+        supportACreator = CreatorCode.new(body['id'], body['slug'], body['displayName'], body['status'], body['verified'])
 
     def search_cosmetic_id(searchQuery, language='en')
         response = HTTParty.get("https://fortnite-api.com/cosmetics/br/#{searchQuery}&language=#{language}")
