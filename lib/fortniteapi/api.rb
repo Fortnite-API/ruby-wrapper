@@ -8,8 +8,17 @@ class FortniteAPI
     ShopItem = Struct.new(:regularPrice, :finalPrice, :isBundle, :giftable, :refundable, :panel, :sortPriority, :banner, :items)
     CreatorCode = Struct.new(:id, :slug, :displayName, :status, :verified)
 
+    def initialize(apikey=nil)
+        @apikey = apikey
+        @headers = {"x-api-key" => @apikey}
+
+        if apikey == nil
+            puts 'Warning: Next monday (Dec. 9th) at 8 PM (UTC) every endpoint will require an API-Key, you can get one at: fortnite-api.com.'
+        end
+    end
+
     def search_cosmetic(searchQuery, tag='name', language='en', searchLanguage='en')
-        response = HTTParty.get("https://fortnite-api.com/cosmetics/br/search?#{tag}=#{searchQuery}&language=#{language}&searchLanguage=#{searchLanguage}")
+        response = HTTParty.get("https://fortnite-api.com/cosmetics/br/search?#{tag}=#{searchQuery}&language=#{language}&searchLanguage=#{searchLanguage}", :headers => @headers)
         body = JSON.parse(response.body)['data']
         if response.code == 200
             searchResult = BRCosmetic.new(body['id'], body['type'], body['backendType'], body['rarity'], body['displayRarity'], body['backendRarity'], body['name'], body['shortDescription'], body['description'], body['set'], body['setText'], body['backendSeries'], body['images'], body['variants'], body['gameplayTags'], body['displayAssetPath'], body['definition'], body['requiredItemId'], body['builtInEmoteId'], body['path'], body['lastUpdate'], body['added'])
@@ -30,12 +39,14 @@ class FortniteAPI
     end
 
     def get_creator_code(slug)
-        repsonse = HTTParty.get("https://fortnite-api.com/creatorcode/search?slug=#{slug}")
+        response = HTTParty.get("https://fortnite-api.com/creatorcode/search?slug=#{slug}", :headers => @headers)
         body = JSON.parse(response.body)['data']
         supportACreator = CreatorCode.new(body['id'], body['slug'], body['displayName'], body['status'], body['verified'])
+        supportACreator
+    end
 
     def search_cosmetic_id(searchQuery, language='en')
-        response = HTTParty.get("https://fortnite-api.com/cosmetics/br/#{searchQuery}&language=#{language}")
+        response = HTTParty.get("https://fortnite-api.com/cosmetics/br/#{searchQuery}&language=#{language}", :headers => @headers)
         body = JSON.parse(response.body)['data']
         if response.code == 200
             searchResult = BRCosmetic.new(body['id'], body['type'], body['backendType'], body['rarity'], body['displayRarity'], body['backendRarity'], body['name'], body['shortDescription'], body['description'], body['set'], body['setText'], body['backendSeries'], body['images'], body['variants'], body['gameplayTags'], body['displayAssetPath'], body['definition'], body['requiredItemId'], body['builtInEmoteId'], body['path'], body['lastUpdate'], body['added'])
@@ -57,7 +68,7 @@ class FortniteAPI
 
     def search_cosmetics(searchQuery, tag='name', language='en', searchLanguage='en')
         cosmetics = []
-        response = HTTParty.get("https://fortnite-api.com/cosmetics/br/search/all?#{tag}=#{searchQuery}&language=#{language}&searchLanguage=#{searchLanguage}")
+        response = HTTParty.get("https://fortnite-api.com/cosmetics/br/search/all?#{tag}=#{searchQuery}&language=#{language}&searchLanguage=#{searchLanguage}", :headers => @headers)
         body = JSON.parse(response.body)['data']
         if response.code == 200
             for x in body
@@ -81,13 +92,13 @@ class FortniteAPI
     end
 
     def all_cosmetics()
-        response = HTTParty.get("https://fortnite-api.com/cosmetics/br")
+        response = HTTParty.get("https://fortnite-api.com/cosmetics/br", :headers => @headers)
         JSON.parse(response.body)
     end
 
     def get_br_news(language='en')
         br_news_list = []
-        response = HTTParty.get("https://fortnite-api.com/news/br?language=#{language}")
+        response = HTTParty.get("https://fortnite-api.com/news/br?language=#{language}", :headers => @headers)
         messages = JSON.parse(response.body)['data']['messages']
         for x in messages
             newsResult = BRNews.new(x['image'], x['hidden'], x['messageType'], x['type'], x['adspace'], x['spotlight'], x['title'], x['body'])
@@ -98,7 +109,7 @@ class FortniteAPI
 
     def get_stw_news(language='en')
         stw_news_list = []
-        response = HTTParty.get("https://fortnite-api.com/news/stw?language=#{language}")
+        response = HTTParty.get("https://fortnite-api.com/news/stw?language=#{language}", :headers => @headers)
         messages = JSON.parse(response.body)['data']['messages']
         for x in messages
             newsResult = STWNews.new(x['image'], x['hidden'], x['messageType'], x['type'], x['adspace'], x['spotlight'], x['title'], x['body'])
@@ -109,7 +120,7 @@ class FortniteAPI
 
     def get_creative_news(language='en')
         creative_news_list = []
-        response = HTTParty.get("https://fortnite-api.com/news/creative?language=#{language}")
+        response = HTTParty.get("https://fortnite-api.com/news/creative?language=#{language}", :headers => @headers)
         messages = JSON.parse(response.body)['data']['messages']
         for x in messages
             newsResult = CreativeNews.new(x['image'], x['hidden'], x['messageType'], x['type'], x['adspace'], x['spotlight'], x['title'], x['body'])
@@ -121,7 +132,7 @@ class FortniteAPI
     def get_br_store(language='en')
         featured_items = []
         daily_items = []
-        response = HTTParty.get("https://fortnite-api.com/shop/br?language=#{language}")
+        response = HTTParty.get("https://fortnite-api.com/shop/br?language=#{language}", :headers => @headers)
         featured = JSON.parse(response.body)['data']['featured']
         for x in featured
             featuredItem = ShopItem.new(x['regularPrice'], x['finalPrice'], x['isBundle'], x['giftable'], x['refundable'], x['panel'], x['sortPriority'], x['banner'], x['items'])
@@ -131,7 +142,7 @@ class FortniteAPI
         for x in daily
             dailyItem = ShopItem.new(x['regularPrice'], x['finalPrice'], x['isBundle'], x['giftable'], x['refundable'], x['panel'], x['sortPriority'], x['banner'], x['items'])
             daily_items.push(dailyItem)
-        end
+        end 
         br_store = [featured_items, daily_items]
         br_store
     end

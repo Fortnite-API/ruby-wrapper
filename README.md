@@ -16,7 +16,7 @@ To install this gem, simply type into your terminal:
 ```ruby
 require 'fortniteapi'
 
-fortnite_api = FortniteAPI.new()
+fortnite_api = FortniteAPI.new(apikey=X-API-KEY-HERE)
 cosmetics = fortnite_api.search_cosmetic('Renegade')
 puts cosmetics.id
 => cid_013_athena_commando_f

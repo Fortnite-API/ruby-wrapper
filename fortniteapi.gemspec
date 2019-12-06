@@ -3,7 +3,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 Gem::Specification.new do |spec|
   spec.name          = 'fortniteapi'
-  spec.version       = '0.0.2'
+  spec.version       = '1.0.0'
   spec.authors       = ['xMistt']
   spec.summary       = 'Ruby implementation for https://fortnite-api.com'
   spec.homepage      = 'https://github.com/Fortnite-API/ruby-wrapper'
