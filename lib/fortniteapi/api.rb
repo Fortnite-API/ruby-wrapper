@@ -7,13 +7,14 @@ class FortniteAPI
     CreativeNews = Struct.new(:image, :hidden, :messageType, :type, :adspace, :spotlight, :title, :body)
     ShopItem = Struct.new(:regularPrice, :finalPrice, :isBundle, :giftable, :refundable, :panel, :sortPriority, :banner, :items)
     CreatorCode = Struct.new(:id, :slug, :displayName, :status, :verified)
+    AES = Struct.new(:aes, :build, :lastUpdate)
 
     def initialize(apikey=nil)
         @apikey = apikey
         @headers = {"x-api-key" => @apikey}
 
         if apikey == nil
-            puts 'Warning: Next monday (Dec. 9th) at 8 PM (UTC) every endpoint will require an API-Key, you can get one at: fortnite-api.com.'
+            raise 'Not API key provided, this is now required. You can get one at: fortnite-api.com.'
         end
     end
 
@@ -145,5 +146,12 @@ class FortniteAPI
         end 
         br_store = [featured_items, daily_items]
         br_store
+    end
+
+    def get_aes()
+        response = HTTParty.get("https://fortnite-api.com/aes", :headers => @headers)
+        data = JSON.parse(response.body)['data']
+        aes = AES.new(data['aes'], data['build'], x['lastUpdate'])
+        aes
     end
 end
